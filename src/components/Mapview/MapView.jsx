@@ -1,22 +1,14 @@
 // ==============================
-// 📦 IMPORTS
+//  IMPORTS
 // ==============================
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Circle,
-  useMapEvents,
-  Polyline,
-} from "react-leaflet";
+import {MapContainer,TileLayer,Marker,Circle,useMapEvents,Polyline,ZoomControl,} from "react-leaflet";
 import { useEffect, useState, useRef } from "react";
 import L from "leaflet";
 import { getDistance } from "../../utils/distance";
 import "./MapView.css";
 
-
 // ==============================
-// 🧭 FIX LEAFLET ICON ISSUE
+//  FIX LEAFLET ICON ISSUE
 // ==============================
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -30,17 +22,19 @@ L.Icon.Default.mergeOptions({
 
 
 // ==============================
-// 🚀 MAIN COMPONENT
+//  MAIN COMPONENT
 // ==============================
 function MapView() {
 
   // ==============================
-  // 📌 STATE VARIABLES
+  //  STATE VARIABLES
   // ==============================
   const [currentPos, setCurrentPos] = useState(null);
   const [markedPos, setMarkedPos] = useState(null);
   const [radius, setRadius] = useState(200);
   const [alarmTriggered, setAlarmTriggered] = useState(false);
+  const [alarmTone, setAlarmTone] = useState("/alarm.mp3");
+const [customToneName, setCustomToneName] = useState("");
 
   const [destinationSearch, setDestinationSearch] = useState("");
   const [currentSearch, setCurrentSearch] = useState("");
@@ -58,19 +52,22 @@ function MapView() {
   const alarmRef = useRef(null);
   const vibrationRef = useRef(null);
   const mapRef = useRef(null);
+  const [showRadiusControl, setShowRadiusControl] = useState(false);
+  const [showReminder, setShowReminder] = useState(false);
+  
 
 
   // ==============================
-  // 🔔 LOAD ALARM SOUND
+  //  LOAD ALARM SOUND
   // ==============================
   useEffect(() => {
-    alarmRef.current = new Audio("/alarm.mp3");
-    alarmRef.current.loop = true;
-  }, []);
+  alarmRef.current = new Audio(alarmTone);
+  alarmRef.current.loop = true;
+}, [alarmTone]);
 
 
   // ==============================
-  // 📍 LIVE GPS TRACKING
+  //  LIVE GPS TRACKING
   // ==============================
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -94,7 +91,7 @@ function MapView() {
 
 
   // ==============================
-  // 🌍 REVERSE GEOCODING (SHORT LOCATION)
+  //  REVERSE GEOCODING (SHORT LOCATION)
   // ==============================
   useEffect(() => {
     if (!currentPos) return;
@@ -126,7 +123,7 @@ function MapView() {
 
 
   // ==============================
-  // 🚨 ALARM + VIBRATION LOGIC
+  //  ALARM + VIBRATION LOGIC
   // ==============================
   useEffect(() => {
     if (!currentPos || !markedPos) return;
@@ -167,7 +164,7 @@ function MapView() {
 
 
   // ==============================
-  // 🗺 AUTO ZOOM TO ROUTE
+  //  AUTO ZOOM TO ROUTE
   // ==============================
   useEffect(() => {
     if (routeCoords.length > 0 && mapRef.current) {
@@ -183,41 +180,63 @@ function MapView() {
 
 
   // ==============================
-  // 🖱 MAP CLICK HANDLER
+  //  MAP CLICK HANDLER
   // ==============================
   function MapClickHandler() {
-    useMapEvents({
-      click(e) {
-        const newPos = [e.latlng.lat, e.latlng.lng];
-        if (!currentPos) return;
+  useMapEvents({
+    click(e) {
+      const newPos = [e.latlng.lat, e.latlng.lng];
+      if (!currentPos) return;
 
-        setMarkedPos(newPos);
-        setRouteCoords([]);
-        setRouteDistance(null);
+      setMarkedPos(newPos);
+      // ✅ Get clicked place name
+fetch(
+  `https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`
+)
+  .then((res) => res.json())
+  .then((data) => {
+    if (data.display_name) {
 
-        fetchRoute(currentPos, newPos);
+      const shortLocation = data.display_name
+        .split(",")
+        .slice(0, 2)
+        .join(",");
 
-        alarmRef.current.pause();
-        alarmRef.current.currentTime = 0;
+      setDestinationSearch(shortLocation);
+    }
+  })
+  .catch((err) => console.error(err));
 
-        if (vibrationRef.current) {
-          clearInterval(vibrationRef.current);
-          vibrationRef.current = null;
-        }
+      setRouteCoords([]);
+      setRouteDistance(null);
 
-        setAlarmTriggered(false);
-        setPopupShown(false);
-        setShowPopup(false);
-      },
-    });
+      // ✅ SHOW RADIUS CONTROL
+      setShowRadiusControl(true);
 
-    return null;
-  }
+      fetchRoute(currentPos, newPos);
+
+      alarmRef.current.pause();
+      alarmRef.current.currentTime = 0;
+
+      if (vibrationRef.current) {
+        clearInterval(vibrationRef.current);
+        vibrationRef.current = null;
+      }
+
+      setAlarmTriggered(false);
+      setPopupShown(false);
+      setShowPopup(false);
+    },
+  });
+
+  return null;
+}
 
 
   // ==============================
-  // 📝 REMINDER SUBMIT
+  //  REMINDER SUBMIT
   // ==============================
+
   const handleReminderSubmit = () => {
     if (!inputMessage.trim()) return;
 
@@ -227,10 +246,36 @@ function MapView() {
     setSuccessMessage("✅ Reminder saved successfully!");
     setTimeout(() => setSuccessMessage(""), 3000);
   };
+  {/* Reminder Box (Mobile Toggle) */}
+{/* <div className={`reminder-box ${showReminder ? "show" : "hide"}`}>
+
+  <h5>Reminder</h5>
+
+  <input
+    type="text"
+    value={inputMessage}
+    onChange={(e) => setInputMessage(e.target.value)}
+    placeholder="Enter reminder..."
+  />
+
+  <button onClick={handleReminderSubmit}>
+    Submit
+  </button>
+
+  {/* ✅ Success message */}
+  // {successMessage && <p className="success-text">{successMessage}</p>}
+
+  {/* ✅ Saved message */}
+  // {savedMessage && <p className="saved-text">{savedMessage}</p>}
+
+  
+
+// </div> */}
+
 
 
   // ==============================
-  // 🛣 FETCH ROUTE (OSRM)
+  //  FETCH ROUTE (OSRM)
   // ==============================
   const fetchRoute = async (start, end) => {
     try {
@@ -255,11 +300,13 @@ function MapView() {
       console.error("Route error:", error);
     }
   };
+  
 
 
   // ==============================
-  // 🔎 SEARCH HANDLER
+  //  SEARCH HANDLER
   // ==============================
+  
   const handleSearch = async () => {
     if (!destinationSearch) return;
 
@@ -289,6 +336,14 @@ function MapView() {
         ];
       }
 
+      if (currentSearch && destinationSearch) {
+
+    // your existing search logic
+
+    // ✅ Show radius control
+    setShowRadiusControl(true);
+  }
+
       const destResponse = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${destinationSearch}`
       );
@@ -317,101 +372,168 @@ function MapView() {
 
 
   // ==============================
-  // 🎨 UI RENDER
+  //  UI RENDER
   // ==============================
   return (
     <>
-      {/* Search Panel */}
-      <div className="search-panel">
+{/* Search Panel */}
+<div className="search-panel container-fluid">
 
-       <div className="current-location-box">
+  {/* Current Location */}
+  <div className="row g-2">
+    <div className="col-12">
+      <div className="current-location-box">
 
-  <div className="location-label">
-    📍 Current Location
+        <div className="location-label">
+          📍 Current Location
+        </div>
+
+        {locationMode === "gps" ? (
+          <div className="location-display">
+            {currentSearch || "Detecting location..."}
+          </div>
+        ) : (
+          <input
+            type="text"
+            value={currentSearch}
+            onChange={(e) => setCurrentSearch(e.target.value)}
+            placeholder="Search your location"
+            className="location-input"
+          />
+        )}
+
+        <select
+          value={locationMode}
+          onChange={(e) => {
+            const mode = e.target.value;
+            setLocationMode(mode);
+
+            if (mode === "manual") {
+              setCurrentSearch("");
+            }
+
+            if (mode === "gps") {
+              if (currentSearch) {
+                const shortLocation = currentSearch.split(",")[0];
+                setCurrentSearch(shortLocation);
+              }
+            }
+          }}
+          className="location-dropdown"
+        >
+          <option value="gps">Use my live location</option>
+          <option value="manual">Search manually</option>
+        </select>
+
+      </div>
+    </div>
   </div>
 
-  {locationMode === "gps" ? (
-    <div className="location-display">
-      {currentSearch || "Detecting location..."}
+  {/* Destination + Search */}
+  <div className="row g-2 mt-2 align-items-center">
+
+    <div className="col-8">
+      <input
+        type="text"
+        placeholder="Destination Location"
+        value={destinationSearch}
+        onChange={(e) => setDestinationSearch(e.target.value)}
+        className="form-control"
+      />
     </div>
-  ) : (
-    <input
-      type="text"
-      value={currentSearch}
-      onChange={(e) => setCurrentSearch(e.target.value)}
-      placeholder="Search your location"
-      className="location-input"
-    />
-  )}
 
-  <select
-  value={locationMode}
-  onChange={(e) => {
-    const mode = e.target.value;
-    setLocationMode(mode);
+    <div className="col-4 d-grid">
+      <button onClick={handleSearch}>
+        Search
+      </button>
+    </div>
 
-    if (mode === "manual") {
-      // ✅ Clear box when switching to manual
-      setCurrentSearch("");
-    }
-
-    if (mode === "gps") {
-      // ✅ Show short simple location
-      if (currentSearch) {
-        const shortLocation = currentSearch.split(",")[0];
-        setCurrentSearch(shortLocation);
-      }
-    }
-  }}
-  className="location-dropdown"
->
-
-    <option value="gps">Use my live location</option>
-    <option value="manual">Search manually</option>
-  </select>
+  </div>
 
 </div>
 
 
-        <input
-          type="text"
-          placeholder="Destination Location"
-          value={destinationSearch}
-          onChange={(e) => setDestinationSearch(e.target.value)}
-        />
-        <button onClick={handleSearch}>Search</button>
-      </div>
 
       {/* Radius Control */}
-      <div className="control-panel">
-        <label>Alarm Radius: {radius} meters</label>
-        <input
-          type="range"
-          min="50"
-          max="1000"
-          step="50"
-          value={radius}
-          onChange={(e) => setRadius(Number(e.target.value))}
-        />
-        <small>Click on map to mark location</small>
-      </div>
+      {showRadiusControl && (
+  <div className="control-panel">
 
-      {routeDistance && (
-  <div className="distance-box">
-    🚗 Distance: {routeDistance} km
+    <label>Alarm Radius: {radius} meters</label>
+
+    <input
+      type="range"
+      min="50"
+      max="1000"
+      step="50"
+      value={radius}
+      onChange={(e) => setRadius(e.target.value)}
+    />
+
+    <small>Click on map to mark location</small>
+
+    {routeDistance && (
+      <div className="distance-box">
+        🚗 Distance: {routeDistance} km
+      </div>
+    )}
+
+
   </div>
 )}
-
+      
 {/* Message Input Box */}
-<div className="message-box">
+{/* Reminder Box */}
+<div className={`message-box ${showReminder ? "show" : ""}`}>
+
   <label>Reminder Message</label>
 
   <input
     type="text"
     placeholder="Type your message..."
-   value={inputMessage}
-onChange={(e) => setInputMessage(e.target.value)}
+    value={inputMessage}
+    onChange={(e) => setInputMessage(e.target.value)}
   />
+  <label className="tone-label">
+  Alarm Tone
+</label>
+
+<select
+  value={alarmTone}
+  onChange={(e) => {
+    setAlarmTone(e.target.value);
+    setCustomToneName("");
+  }}
+  className="tone-select"
+>
+  <option value="/alarm.mp3">Default Alarm</option>
+  <option value="/bell.mp3">Bell Sound</option>
+  <option value="/ringtone.mp3">Ringtone</option>
+</select>
+
+<label className="upload-label">
+  Upload Custom Tone
+</label>
+
+<input
+  type="file"
+  accept="audio/*"
+  onChange={(e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      const audioURL = URL.createObjectURL(file);
+
+      setAlarmTone(audioURL);
+      setCustomToneName(file.name);
+    }
+  }}
+/>
+
+{customToneName && (
+  <p className="tone-name">
+    🎵 {customToneName}
+  </p>
+)}
 
   <button onClick={handleReminderSubmit}>
     Submit
@@ -422,6 +544,7 @@ onChange={(e) => setInputMessage(e.target.value)}
       {successMessage}
     </div>
   )}
+
 </div>
 
 {/* Popup */}
@@ -439,16 +562,18 @@ onChange={(e) => setInputMessage(e.target.value)}
 
 
       {/* Map */}
-      <MapContainer
-        center={currentPos || [20.5937, 78.9629]}
-        zoom={currentPos ? 15 : 5}
-        className="map-container"
-        whenCreated={(map) => (mapRef.current = map)}
-      >
+           <MapContainer
+  center={currentPos || [20.5937, 78.9629]}
+  zoom={currentPos ? 15 : 5}
+  zoomControl={false}
+  className="map-container"
+  whenCreated={(map) => (mapRef.current = map)}>
+
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution="&copy; OpenStreetMap contributors"
         />
+        <ZoomControl position="bottomright" />
 
         {currentPos && <Marker position={currentPos} />}
         {markedPos && <Marker position={markedPos} />}
@@ -469,8 +594,17 @@ onChange={(e) => setInputMessage(e.target.value)}
         )}
 
         <MapClickHandler />
+
       </MapContainer>
+      {/* Floating Message Button */}
+<button
+  className="floating-btn"
+  onClick={() => setShowReminder(!showReminder)}
+>
+  📝
+</button>
     </>
+    
   );
 }
 
