@@ -34,7 +34,7 @@ function MapView() {
   const [radius, setRadius] = useState(200);
   const [alarmTriggered, setAlarmTriggered] = useState(false);
   const [alarmTone, setAlarmTone] = useState("/alarm.mp3");
-const [customToneName, setCustomToneName] = useState("");
+  const [customToneName, setCustomToneName] = useState("/ringtone.mp3");
 
   const [destinationSearch, setDestinationSearch] = useState("");
   const [currentSearch, setCurrentSearch] = useState("");
@@ -451,8 +451,6 @@ fetch(
   </div>
 
 </div>
-
-
 
       {/* Radius Control */}
       {showRadiusControl && (
