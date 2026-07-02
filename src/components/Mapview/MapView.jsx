@@ -376,9 +376,14 @@ fetch(
   // ==============================
   return (
     <>
+    
 {/* Search Panel */}
 <div className="search-panel container-fluid">
 
+<div className="app-logo">
+  <img src="/rememberlogo.jpg" alt="Remember Logo" className="logo-img" />
+  <h3 className="logo-title">Remember</h3>
+</div>
   {/* Current Location */}
   <div className="row g-2">
     <div className="col-12">
@@ -594,6 +599,13 @@ fetch(
         <MapClickHandler />
 
       </MapContainer>
+
+{/* Founder Credit */}
+<div className="founder-credit">
+  <span>Designed & Developed by <strong>Srihariharan R</strong></span>
+  
+</div>
+
       {/* Floating Message Button */}
 <button
   className="floating-btn"
