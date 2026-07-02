@@ -77,13 +77,17 @@ function MapView() {
 
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
+        
         setCurrentPos([
           position.coords.latitude,
           position.coords.longitude,
         ]);
       },
       (error) => console.error(error),
-      { enableHighAccuracy: true }
+      { enableHighAccuracy: true,
+         timeout: 15000,
+         maximumAge: 0
+       }
     );
 
     return () => navigator.geolocation.clearWatch(watchId);
@@ -166,17 +170,30 @@ function MapView() {
   // ==============================
   //  AUTO ZOOM TO ROUTE
   // ==============================
-  useEffect(() => {
-    if (routeCoords.length > 0 && mapRef.current) {
-      const bounds = L.latLngBounds(routeCoords);
+  // useEffect(() => {
+  //   if (routeCoords.length > 0 && mapRef.current) {
+  //     const bounds = L.latLngBounds(routeCoords);
 
-      mapRef.current.fitBounds(bounds, {
-        padding: [60, 60],
-        animate: true,
-        duration: 1.5,
-      });
-    }
-  }, [routeCoords]);
+  //     mapRef.current.fitBounds(bounds, {
+  //       padding: [60, 60],
+  //       animate: true,
+  //       duration: 1.5,
+  //     });
+  //   }
+  // }, [routeCoords]);
+  useEffect(() => {
+  if (routeCoords.length > 0 && mapRef.current) {
+
+    const bounds = L.latLngBounds(routeCoords);
+
+    mapRef.current.fitBounds(bounds, {
+      padding: [70, 70],
+      maxZoom: 16,      // Don't zoom in too much
+      animate: true
+    });
+
+  }
+}, [routeCoords]);
 
 
   // ==============================
@@ -189,7 +206,7 @@ function MapView() {
       if (!currentPos) return;
 
       setMarkedPos(newPos);
-      // ✅ Get clicked place name
+      //  Get clicked place name
 fetch(
   `https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`
 )
@@ -210,7 +227,7 @@ fetch(
       setRouteCoords([]);
       setRouteDistance(null);
 
-      // ✅ SHOW RADIUS CONTROL
+      //  SHOW RADIUS CONTROL
       setShowRadiusControl(true);
 
       fetchRoute(currentPos, newPos);
@@ -246,33 +263,7 @@ fetch(
     setSuccessMessage("✅ Reminder saved successfully!");
     setTimeout(() => setSuccessMessage(""), 3000);
   };
-  {/* Reminder Box (Mobile Toggle) */}
-{/* <div className={`reminder-box ${showReminder ? "show" : "hide"}`}>
-
-  <h5>Reminder</h5>
-
-  <input
-    type="text"
-    value={inputMessage}
-    onChange={(e) => setInputMessage(e.target.value)}
-    placeholder="Enter reminder..."
-  />
-
-  <button onClick={handleReminderSubmit}>
-    Submit
-  </button>
-
-  {/* ✅ Success message */}
-  // {successMessage && <p className="success-text">{successMessage}</p>}
-
-  {/* ✅ Saved message */}
-  // {savedMessage && <p className="saved-text">{savedMessage}</p>}
-
   
-
-// </div> */}
-
-
 
   // ==============================
   //  FETCH ROUTE (OSRM)
@@ -338,9 +329,8 @@ fetch(
 
       if (currentSearch && destinationSearch) {
 
-    // your existing search logic
 
-    // ✅ Show radius control
+    // Show radius control
     setShowRadiusControl(true);
   }
 
@@ -435,7 +425,7 @@ fetch(
   </div>
 
   {/* Destination + Search */}
-  <div className="row g-2 mt-2 align-items-center">
+  <div className="row g-1 mt-1 align-items-center">
 
     <div className="col-8">
       <input
@@ -472,11 +462,11 @@ fetch(
       onChange={(e) => setRadius(e.target.value)}
     />
 
-    <small>Click on map to mark location</small>
+  
 
     {routeDistance && (
       <div className="distance-box">
-        🚗 Distance: {routeDistance} km
+        Distance: {routeDistance} km
       </div>
     )}
 
@@ -560,9 +550,6 @@ fetch(
     </div>
   </div>
 )}
-
-
-
 
       {/* Map */}
            <MapContainer
