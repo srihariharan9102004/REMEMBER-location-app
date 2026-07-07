@@ -3,6 +3,7 @@
 // ==============================
 import {MapContainer,TileLayer,Marker,Circle,useMapEvents,Polyline,ZoomControl,} from "react-leaflet";
 import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import { getDistance } from "../../utils/distance";
 import "./MapView.css";
@@ -35,6 +36,10 @@ function MapView() {
   const [alarmTriggered, setAlarmTriggered] = useState(false);
   const [alarmTone, setAlarmTone] = useState("/alarm.mp3");
   const [customToneName, setCustomToneName] = useState("/ringtone.mp3");
+  const navigate = useNavigate();
+const [mapStyle, setMapStyle] = useState(
+    localStorage.getItem("mapStyle") || "standard"
+);
 
   const [destinationSearch, setDestinationSearch] = useState("");
   const [currentSearch, setCurrentSearch] = useState("");
@@ -370,10 +375,32 @@ fetch(
 {/* Search Panel */}
 <div className="search-panel container-fluid">
 
-<div className="app-logo">
+{/* <div className="app-logo">
   <img src="/rememberlogo.jpg" alt="Remember Logo" className="logo-img" />
   <h3 className="logo-title">Remember</h3>
+</div> */}
+<div className="top-bar">
+
+    <div className="app-logo">
+        <img
+            src="/rememberlogo.jpg"
+            alt="Remember Logo"
+            className="logo-img"
+        />
+
+        <h3 className="logo-title">Remember</h3>
+    </div>
+
+    <button
+        className="profile-btn"
+        onClick={() => navigate("/profile")}
+    >
+        👤
+    </button>
+
 </div>
+
+
   {/* Current Location */}
   <div className="row g-2">
     <div className="col-12">
@@ -559,10 +586,20 @@ fetch(
   className="map-container"
   whenCreated={(map) => (mapRef.current = map)}>
 
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution="&copy; OpenStreetMap contributors"
-        />
+         
+<TileLayer
+    url={
+        mapStyle === "standard"
+            ? "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        : mapStyle === "satellite"
+            ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+        : mapStyle === "dark"
+            ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        : mapStyle === "terrain"
+            ? "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+        : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+    }
+/>
         <ZoomControl position="bottomright" />
 
         {currentPos && <Marker position={currentPos} />}

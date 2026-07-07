@@ -1,0 +1,550 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI,sans-serif;
+}
+
+body{
+
+    background:linear-gradient(135deg,#2563eb,#1e40af);
+
+}
+
+.login-container{
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:10px;
+
+}
+
+
+
+@keyframes fade{
+
+    from{
+
+        opacity:0;
+        transform:translateY(40px);
+
+    }
+
+    to{
+
+        opacity:1;
+        transform:translateY(0);
+
+    }
+
+}
+
+.login-logo{
+
+    width:90px;
+
+    height:90px;
+
+    border-radius:50%;
+
+    margin-bottom:10px;
+
+}
+
+.login-card h1{
+
+    margin-bottom:8px;
+
+}
+
+.subtitle{
+
+    color:#eee;
+
+    margin-bottom:30px;
+
+}
+
+.input-group{
+
+    text-align:left;
+
+    margin-bottom:20px;
+
+}
+
+.input-group label{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    font-weight:600;
+
+}
+
+.input-group input{
+
+    width:100%;
+    height:52px;
+
+    border:none;
+
+    border-radius:10px;
+
+    padding:0 15px;
+
+    font-size:16px;
+
+    outline:none;
+
+}
+
+.password-box{
+
+    position:relative;
+    width:100%;
+
+}
+.password-box input{
+    width:100%;
+    padding:14px 45px 14px 14px;
+}
+
+
+.eye-btn{
+
+    position:absolute;
+
+    top:50%;
+    right:15px;
+
+    transform:translateY(-50%);
+
+    border:none;
+    background:transparent;
+
+    cursor:pointer;
+
+    font-size:18px;
+
+}
+
+.login-options{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+    font-size:14px;
+
+}
+
+.login-options a{
+
+    color:#fff;
+
+    text-decoration:none;
+
+}
+
+.login-btn{
+
+    width:100%;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:white;
+
+    color:#2563eb;
+
+    font-size:17px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.login-btn:hover{
+
+    transform:translateY(-2px);
+
+    background:#f2f2f2;
+
+}
+
+.signup-link{
+
+    margin-top:25px;
+
+}
+
+.signup-link a{
+
+    color:white;
+
+    margin-left:5px;
+
+    font-weight:bold;
+
+    text-decoration:none;
+
+}
+/* ===========================
+   LOGIN PAGE
+=========================== */
+
+.login-container{
+
+    min-height:80vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:30px 20px;
+
+}
+
+/* ===========================
+   BRAND
+=========================== */
+
+.brand-section{
+
+    text-align:center;
+
+}
+
+.brand-logo{
+
+    width:70px;
+
+    height:70px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.25);
+
+}
+
+.brand-title{
+
+    margin-top:2px;
+
+    color:white;
+
+    font-size:42px;
+
+    font-weight:700;
+
+    letter-spacing:1px;
+
+}
+
+.brand-tagline{
+
+    color:#e8e8e8;
+
+    margin-top:2px;
+
+    font-size:16px;
+
+}
+
+/* ===========================
+   LOGIN CARD
+=========================== */
+
+.login-card{
+
+    width:100%;
+    max-width:450px;
+    background:rgba(255,255,255,.15);
+    backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:22px;
+    padding:40px;
+    text-align:center;
+    color:white;
+    box-shadow:0 20px 45px rgba(0,0,0,.25);
+     animation:fade .7s ease;
+}
+
+@media(max-width:768px){
+
+    .login-card{
+
+        width:100%;
+        padding:30px;
+
+    }
+
+}
+
+@media(max-width:480px){
+
+    .login-card{
+
+        padding:25px;
+
+    }
+
+    .login-logo{
+
+        width:75px;
+        height:75px;
+
+    }
+
+    .login-card h1{
+
+        font-size:28px;
+
+    }
+
+}
+@media (max-width:768px){
+
+    .brand-section{
+
+        margin-bottom:18px;
+
+    }
+
+    .brand-logo{
+
+        width:55px;
+        height:55px;
+
+    }
+
+    .brand-title{
+
+        font-size:28px;
+
+        margin-top:8px;
+
+    }
+
+    .brand-tagline{
+
+        font-size:13px;
+
+        margin-top:4px;
+
+    }
+
+    .login-card{
+
+        width:92%;
+
+        padding:28px 22px;
+
+    }
+
+}
+@media (max-width:480px){
+
+    .brand-logo{
+
+        width:48px;
+        height:48px;
+
+    }
+
+    .brand-title{
+
+        font-size:24px;
+
+    }
+
+    .brand-tagline{
+
+        font-size:12px;
+
+    }
+
+    .login-card{
+
+        width:95%;
+
+        padding:24px 18px;
+
+    }
+
+}
+/* ===========================
+   MOBILE RESPONSIVE
+=========================== */
+
+@media (max-width:768px){
+
+    /* Container */
+    .login-container{
+        padding:20px 15px;
+        gap:15px;
+    }
+
+    /* Brand */
+    .brand-section{
+        margin-bottom:10px;
+    }
+
+    .brand-logo{
+        width:50px;
+        height:50px;
+    }
+
+    .brand-title{
+        font-size:24px;
+        margin-top:6px;
+    }
+
+    .brand-tagline{
+        font-size:12px;
+        margin-top:2px;
+    }
+
+    /* Login Card */
+    .login-card{
+        width:95%;
+        max-width:360px;
+        padding:25px 20px;
+        border-radius:18px;
+    }
+
+    .login-card h2{
+        font-size:28px;
+        margin-bottom:5px;
+    }
+
+    .subtitle{
+        font-size:14px;
+        margin-bottom:22px;
+    }
+
+    /* Labels */
+    .input-group label{
+        font-size:14px;
+        margin-bottom:6px;
+    }
+
+    /* Inputs */
+    .input-group input{
+        height:44px;
+        font-size:14px;
+        padding:0 12px;
+    }
+
+    .password-box input{
+        padding-right:40px;
+    }
+
+    .eye-btn{
+        font-size:16px;
+        right:12px;
+    }
+
+    /* Remember & Forgot */
+    .login-options{
+        font-size:13px;
+        margin:18px 0;
+    }
+
+    .login-options input{
+        transform:scale(.9);
+    }
+
+    /* Login Button */
+    .login-btn{
+        height:45px;
+        font-size:15px;
+        border-radius:10px;
+    }
+
+    /* Signup */
+    .signup-link{
+        font-size:14px;
+        margin-top:18px;
+    }
+
+}
+@media (max-width:480px){
+
+    .brand-logo{
+        width:44px;
+        height:44px;
+    }
+
+    .brand-title{
+        font-size:22px;
+    }
+
+    .brand-tagline{
+        font-size:11px;
+    }
+
+    .login-card{
+        width:96%;
+        padding:20px 16px;
+    }
+
+    .login-card h2{
+        font-size:24px;
+    }
+
+    .subtitle{
+        font-size:13px;
+    }
+
+    .input-group label{
+        font-size:13px;
+    }
+
+    .input-group input{
+        height:40px;
+        font-size:13px;
+    }
+
+    .eye-btn{
+        font-size:15px;
+    }
+
+    .login-options{
+        font-size:12px;
+    }
+
+    .login-btn{
+        height:42px;
+        font-size:14px;
+    }
+
+    .signup-link{
+        font-size:13px;
+    }
+
+}
