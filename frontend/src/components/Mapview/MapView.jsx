@@ -383,7 +383,7 @@ fetch(
 
     <div className="app-logo">
         <img
-            src="/rememberlogo.jpg"
+            src="/rememberlogo.png"
             alt="Remember Logo"
             className="logo-img"
         />

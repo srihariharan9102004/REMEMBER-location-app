@@ -62,7 +62,7 @@ if (!emailPattern.test(email)) {
             <div className="brand-section">
 
                 <img
-    src="/rememberlogo.jpg"
+    src="/rememberlogo.png"
     alt="Remember Logo"
     className="brand-logo"
 />
