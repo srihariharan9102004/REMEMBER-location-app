@@ -18,7 +18,7 @@ import remember.dto.LoginResponse;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+// @CrossOrigin(origins = "*")
 public class AuthController {
 
     private final UserService userService;
