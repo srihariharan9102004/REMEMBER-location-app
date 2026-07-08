@@ -4,6 +4,7 @@
 
 // }
 package remember.config;
+import java.util.List;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -36,14 +37,35 @@ public class SecurityConfig {
 
         return http.build();
     }
-    @Bean
+//     @Bean
+// CorsConfigurationSource corsConfigurationSource() {
+
+//     CorsConfiguration configuration = new CorsConfiguration();
+
+//     configuration.addAllowedOrigin("http://localhost:5173");
+//     configuration.addAllowedHeader("*");
+//     configuration.addAllowedMethod("*");
+
+//     UrlBasedCorsConfigurationSource source =
+//             new UrlBasedCorsConfigurationSource();
+
+//     source.registerCorsConfiguration("/**", configuration);
+
+//     return source;
+// }
+@Bean
 CorsConfigurationSource corsConfigurationSource() {
 
     CorsConfiguration configuration = new CorsConfiguration();
 
-    configuration.addAllowedOrigin("http://localhost:5173");
-    configuration.addAllowedHeader("*");
-    configuration.addAllowedMethod("*");
+    configuration.setAllowedOriginPatterns(List.of(
+            "http://localhost:5173",
+            "https://remember-location-app.vercel.app"
+    ));
+
+    configuration.setAllowedMethods(List.of("*"));
+    configuration.setAllowedHeaders(List.of("*"));
+    configuration.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source =
             new UrlBasedCorsConfigurationSource();
