@@ -60,7 +60,8 @@ CorsConfigurationSource corsConfigurationSource() {
 
     configuration.setAllowedOriginPatterns(List.of(
             "http://localhost:5173",
-            "https://remember-location-app.vercel.app"
+            "https://*.vercel.app"
+            
     ));
 
     configuration.setAllowedMethods(List.of("*"));
